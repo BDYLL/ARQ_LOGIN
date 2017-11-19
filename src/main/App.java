@@ -1,5 +1,6 @@
 package main;
 
+import services.SignInService;
 import services.UserService;
 
 import javax.ws.rs.ApplicationPath;
@@ -12,6 +13,7 @@ public class App extends Application {
     public Set<Class<?>> getClasses() {
         HashSet h = new HashSet<Class<?>>();
         h.add(UserService.class);
+        h.add(SignInService.class);
         return h;
     }
 }

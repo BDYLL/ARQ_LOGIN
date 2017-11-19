@@ -25,27 +25,6 @@ public class UserService {
 
     private HabitsDatabase db=new FirebaseHabitsDatabase();
 
-    @POST
-    @Path("/signin")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String signin(UserPass user,@Context final HttpServletResponse res){
-        String response=this.db.authenticate(user);
-
-        JsonObject object=Json.createReader(new StringReader(response)).readObject();
-
-        if(object.containsKey("error")){
-            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-
-            try {
-                res.flushBuffer();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return response;
-    }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
