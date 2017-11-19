@@ -1,5 +1,7 @@
 package users;
 
+import javax.json.Json;
+
 public class UserNoID {
 
     private String email,name, DOB;
@@ -38,11 +40,7 @@ public class UserNoID {
 
     @Override
     public String toString() {
-        return "users.UserNoID{" +
-                "email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                ", DOB='" + DOB + '\'' +
-                '}';
+        return Json.createObjectBuilder().add("email",email).add("name",name).add("DOB",DOB).build().toString();
     }
 
     @Override

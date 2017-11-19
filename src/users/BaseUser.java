@@ -1,5 +1,7 @@
 package users;
 
+import javax.json.Json;
+
 public class BaseUser {
 
     private String name,DOB;
@@ -28,5 +30,8 @@ public class BaseUser {
         this.DOB = DOB;
     }
 
-
+    @Override
+    public String toString() {
+        return Json.createObjectBuilder().add("name",name).add("DOB",DOB).build().toString();
+    }
 }

@@ -1,23 +1,19 @@
 package db;
 
+import users.BaseUser;
 import users.FullUser;
-import users.UserNoID;
+import users.UserPass;
 
 import java.util.List;
 
 public class RedisHabitsDatabase implements HabitsDatabase {
     @Override
-    public int addUser(UserNoID newUser) {
-        return 0;
+    public String addUser(FullUser newUser) {
+        return "";
     }
 
     @Override
-    public FullUser getUserByID(int id) {
-        return null;
-    }
-
-    @Override
-    public FullUser getUserByEmail(String email) {
+    public FullUser getUserByID(String id) {
         return null;
     }
 
@@ -27,12 +23,7 @@ public class RedisHabitsDatabase implements HabitsDatabase {
     }
 
     @Override
-    public boolean deleteUserByID(int id) {
-        return false;
-    }
-
-    @Override
-    public boolean deleteUserByEmail(String email) {
+    public boolean deleteUserByID(String id) {
         return false;
     }
 
@@ -42,22 +33,18 @@ public class RedisHabitsDatabase implements HabitsDatabase {
     }
 
     @Override
-    public boolean updateUserByID(int id) {
+    public boolean updateUserByID(String id, BaseUser user) {
         return false;
     }
 
     @Override
-    public boolean updateUserByEmail(String email) {
-        return false;
+    public String signup(UserPass user) {
+        return null;
     }
 
     @Override
-    public boolean connect() {
-        return false;
+    public String authenticate(UserPass user) {
+        return null;
     }
 
-    @Override
-    public boolean authenticate(String email, String hash) {
-        return false;
-    }
 }

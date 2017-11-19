@@ -6,20 +6,20 @@ import java.util.List;
 
 public interface HabitsDatabase {
 
-    int addUser(UserNoID newUser);
+    String addUser(FullUser newUser);
 
-    FullUser getUserByID(int id);
-    FullUser getUserByEmail(String email);
-    List<FullUser> getAllUsers();
-
-    boolean deleteUserByID(int id);
-    boolean deleteUserByEmail(String email);
     void deleteAllUsers();
 
-    boolean updateUserByID(int id);
-    boolean updateUserByEmail(String email);
+    List<FullUser> getAllUsers();
 
-    boolean connect();
+    FullUser getUserByID(String id);
 
-    boolean authenticate(String email,String hash);
+    boolean deleteUserByID(String id);
+
+    boolean updateUserByID(String id, BaseUser user);
+
+    String signup(UserPass user);
+
+    String authenticate(UserPass user);
+
 }

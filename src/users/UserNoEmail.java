@@ -2,23 +2,23 @@ package users;
 
 public class UserNoEmail {
 
-    private int id;
+    private String id;
     private String name,DOB;
 
 
     public UserNoEmail(){}
 
-    public UserNoEmail(int id, String name, String DOB) {
+    public UserNoEmail(String id, String name, String DOB) {
         this.id = id;
         this.name = name;
         this.DOB = DOB;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -50,6 +50,6 @@ public class UserNoEmail {
 
     @Override
     public int hashCode() {
-        return id;
+        return id.hashCode();
     }
 }

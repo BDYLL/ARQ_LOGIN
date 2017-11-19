@@ -4,23 +4,26 @@ import javax.json.Json;
 
 public class FullUser {
 
-    private int id;
+    private String id;
     private String email;
     private String name;
     private String DOB;
 
-    public FullUser(int id, String email, String name, String DOB) {
+    public FullUser() {
+    }
+
+    public FullUser(String id, String email, String name, String DOB) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.DOB = DOB;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -70,6 +73,6 @@ public class FullUser {
 
     @Override
     public int hashCode() {
-        return id;
+        return id.hashCode();
     }
 }
