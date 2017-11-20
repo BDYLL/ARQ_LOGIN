@@ -23,7 +23,13 @@ public class UserPass extends FullUser {
 
     @Override
     public String toString() {
-        return Json.createObjectBuilder().add("id",getId()).add("email",getEmail()).add("DOB",getDOB()).add("password",password).build().toString();
+        return Json.createObjectBuilder()
+                .add("id",getId())
+                .add("email",getEmail())
+                .add("DOB",getDOB())
+                .add("password",password)
+                .build()
+                .toString();
     }
 
     public FullUser getFullUser(){

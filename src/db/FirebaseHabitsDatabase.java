@@ -1,19 +1,20 @@
 package db;
 
 import com.google.firebase.database.*;
-import users.BaseUser;
-import users.FullUser;
-import users.UserPass;
+import users.*;
 
 import javax.json.*;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FirebaseHabitsDatabase implements HabitsDatabase {
 
@@ -29,10 +30,14 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
 
     private static final String API_KEY="AIzaSyDHxxcIInplDxI1LSDGbjcVM3H_eVhhoP0";
 
+    private static final String REFRESH_URL="https://securetoken.googleapis.com/v1/token?key=";
+
+    private static final String DELETE_USER="https://www.googleapis.com/identitytoolkit/v3/relyingparty/deleteAccount?key=";
 
     private FirebaseDatabase db;
 
     public FirebaseHabitsDatabase(){}
+
 
     @Override
     public String addUser(FullUser newUser) {
@@ -146,15 +151,17 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
         try {
             lines=this.getLinesFromInputStream(connection.getInputStream());
         } catch (IOException e) {
-            e.printStackTrace();
+            lines=this.getLinesFromInputStream(connection.getErrorStream());
         }
 
         return lines;
-
     }
 
+
+
+
     @Override
-    public String authenticate(UserPass user) {
+    public String authenticate(UserOnlyPass user) {
 
         String parsedJSON=Json.createObjectBuilder()
                 .add("email",user.getEmail())
@@ -184,6 +191,46 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
             lines=this.getLinesFromInputStream(connection.getInputStream());
         } catch (IOException e) {
             lines=this.getLinesFromInputStream(connection.getErrorStream());
+        }
+
+        return lines;
+    }
+
+    @Override
+    public String refreshToken(UserRefreshToken userRefreshToken) {
+
+        String parsedJSON=Json.createObjectBuilder()
+                .add("refresh_token",userRefreshToken.getRefreshToken())
+                .add("grant_type","refresh_token")
+                .build()
+                .toString();
+
+
+        URL url=null;
+        String lines="";
+        HttpURLConnection connection=null;
+
+        try {
+            url=new URL(REFRESH_URL+API_KEY);
+            connection=(HttpURLConnection)url.openConnection();
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type","application/json");
+            connection.setRequestMethod("POST");
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+            out.write(parsedJSON);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        try {
+            lines=this.getLinesFromInputStream(connection.getInputStream());
+
+        } catch (IOException e) {
+            lines=this.getLinesFromInputStream(connection.getErrorStream());
+
         }
 
         return lines;
@@ -291,7 +338,7 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
         return lines;
     }
 
-    public String deleteJSONfromFirebase(String path){
+    private String deleteJSONfromFirebase(String path){
         URL url=null;
         String lines="";
         HttpURLConnection connection=null;
@@ -346,4 +393,5 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
 
         return lines;
     }
+
 }

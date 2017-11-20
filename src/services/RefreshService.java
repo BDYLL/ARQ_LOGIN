@@ -2,8 +2,7 @@ package services;
 
 import db.FirebaseHabitsDatabase;
 import db.HabitsDatabase;
-import users.UserOnlyPass;
-import users.UserPass;
+import users.UserRefreshToken;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -17,29 +16,31 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.StringReader;
 
-@Path("/signin")
-public class SignInService {
+@Path("/refresh")
+public class RefreshService {
 
     private HabitsDatabase db=new FirebaseHabitsDatabase();
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public String signin(UserOnlyPass user, @Context final HttpServletResponse res){
-        String response=this.db.authenticate(user);
+    public String refreshToken(UserRefreshToken token,@Context final HttpServletResponse response){
 
-        JsonObject object= Json.createReader(new StringReader(response)).readObject();
+        String resp=this.db.refreshToken(token);
 
-        if(object.containsKey("error")){
-            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        JsonObject respObj= Json.createReader(new StringReader(resp)).readObject();
 
+        if(respObj.containsKey("error")){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             try {
-                res.flushBuffer();
+                response.flushBuffer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            return Json.createObjectBuilder().add("status","Invalid refresh token").build().toString();
         }
 
-        return response;
+        return resp;
     }
+
 }

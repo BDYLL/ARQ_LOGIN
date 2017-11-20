@@ -5,17 +5,12 @@ import db.HabitsDatabase;
 import users.BaseUser;
 import users.FullUser;
 import users.UserPass;
-
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -37,30 +32,9 @@ public class UserService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public String addNewUser(UserPass newUser, @Context final HttpServletResponse response){
+
         /*
-        int newId=2;
-
-        if(newUser.getEmail().equals("nanes@example.com")){
-            response.setStatus(HttpServletResponse.SC_CONFLICT);
-        }
-
-        response.setStatus(HttpServletResponse.SC_CREATED);
-
-        try {
-            response.flushBuffer();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(newUser.toString());
-
-        return Json.createObjectBuilder().add("id",newId).build().toString();
-        */
-
-
         FullUser user=newUser.getFullUser();
-
-
         String json=this.db.addUser(user);
 
         if(json==null) {
@@ -68,6 +42,15 @@ public class UserService {
         }
         else{
             response.setStatus(HttpServletResponse.SC_CREATED);
+        }
+
+        JsonObject object=Json.createReader(new StringReader(json)).readObject();
+
+        boolean invalidEmail=false;
+
+        if(object.containsKey("error")){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            invalidEmail=true;
         }
 
         try {
@@ -79,6 +62,11 @@ public class UserService {
         if(json==null){
             return Json.createObjectBuilder().add("status","already exists").build().toString();
         }
+
+        if(invalidEmail){
+            return Json.createObjectBuilder().add("status","Invalid email").build().toString();
+        }
+
         //return json;
 
         String auth="";
@@ -87,11 +75,14 @@ public class UserService {
             auth=this.db.signup(newUser);
         }
 
+        JsonObject authObj=Json.createReader(new StringReader(auth)).readObject();
+
+        if(authObj.containsKey("error")){
+            return auth;
+        }
+
 
         String id=Json.createReader(new StringReader(json)).readObject().getString("id");
-
-
-        JsonObject authObj=Json.createReader(new StringReader(auth)).readObject();
 
         String jsonResponse=Json.createObjectBuilder()
                 .add("id",id)
@@ -101,6 +92,53 @@ public class UserService {
                 .add("refreshToken",authObj.getString("refreshToken"))
                 .add("expiresIn",authObj.getString("expiresIn"))
                 .add("localId",authObj.getString("localId"))
+                .build().toString();
+
+        return jsonResponse;
+        */
+
+        if(this.db.getUserByID(newUser.getId())!=null){
+            response.setStatus(HttpServletResponse.SC_CONFLICT);
+            try {
+                response.flushBuffer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return Json.createObjectBuilder().add("status","Already exists").build().toString();
+        }
+
+        String sign=this.db.signup(newUser);
+
+        JsonObject signObj=Json.createReader(new StringReader(sign)).readObject();
+
+        if(signObj.containsKey("error")){
+
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            try {
+                response.flushBuffer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return Json.createObjectBuilder().add("status","Invalid email").build().toString();
+        }
+
+        FullUser user=newUser.getFullUser();
+
+        String add=this.db.addUser(user);
+
+
+        String id=Json.createReader(new StringReader(add)).readObject().getString("id");
+
+        String jsonResponse=Json.createObjectBuilder()
+                .add("id",id)
+                .add("kind",signObj.getString("kind"))
+                .add("idToken",signObj.getString("idToken"))
+                .add("email",signObj.getString("email"))
+                .add("refreshToken",signObj.getString("refreshToken"))
+                .add("expiresIn",signObj.getString("expiresIn"))
+                .add("localId",signObj.getString("localId"))
                 .build().toString();
 
 

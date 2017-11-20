@@ -20,6 +20,8 @@ public interface HabitsDatabase {
 
     String signup(UserPass user);
 
-    String authenticate(UserPass user);
+    String authenticate(UserOnlyPass user);
+
+    String refreshToken(UserRefreshToken userRefreshToken);
 
 }

@@ -1,5 +1,6 @@
 package main;
 
+import services.RefreshService;
 import services.SignInService;
 import services.UserService;
 
@@ -14,6 +15,7 @@ public class App extends Application {
         HashSet h = new HashSet<Class<?>>();
         h.add(UserService.class);
         h.add(SignInService.class);
+        h.add(RefreshService.class);
         return h;
     }
 }

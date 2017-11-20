@@ -1,8 +1,6 @@
 package db;
 
-import users.BaseUser;
-import users.FullUser;
-import users.UserPass;
+import users.*;
 
 import java.util.List;
 
@@ -43,7 +41,12 @@ public class RedisHabitsDatabase implements HabitsDatabase {
     }
 
     @Override
-    public String authenticate(UserPass user) {
+    public String authenticate(UserOnlyPass user) {
+        return null;
+    }
+
+    @Override
+    public String refreshToken(UserRefreshToken userRefreshToken) {
         return null;
     }
 
