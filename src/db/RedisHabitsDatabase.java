@@ -50,4 +50,9 @@ public class RedisHabitsDatabase implements HabitsDatabase {
         return null;
     }
 
+    @Override
+    public String deleteUser(UserToken token) {
+        return null;
+    }
+
 }

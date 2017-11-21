@@ -13,6 +13,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 
 
 @Path("/users")
@@ -24,7 +25,13 @@ public class UserService {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getAllUsers(){
-        return db.getAllUsers().toString();
+        List<FullUser> allUsers = db.getAllUsers();
+
+        if(allUsers.isEmpty()){
+            return Json.createArrayBuilder().build().toString();
+        }
+
+        return allUsers.toString();
     }
 
 
@@ -97,6 +104,8 @@ public class UserService {
         return jsonResponse;
         */
 
+        /*
+
         if(this.db.getUserByID(newUser.getId())!=null){
             response.setStatus(HttpServletResponse.SC_CONFLICT);
             try {
@@ -107,13 +116,13 @@ public class UserService {
 
             return Json.createObjectBuilder().add("status","Already exists").build().toString();
         }
+        */
 
         String sign=this.db.signup(newUser);
 
         JsonObject signObj=Json.createReader(new StringReader(sign)).readObject();
 
         if(signObj.containsKey("error")){
-
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             try {
                 response.flushBuffer();
@@ -124,26 +133,33 @@ public class UserService {
             return Json.createObjectBuilder().add("status","Invalid email").build().toString();
         }
 
-        FullUser user=newUser.getFullUser();
+
+        String id=signObj.getString("localId");
+
+        String email=newUser.getEmail();
+
+        String DOB=newUser.getDOB();
+
+        String name=newUser.getName();
+
+        FullUser user=new FullUser(id,email,name,DOB);
 
         String add=this.db.addUser(user);
 
 
-        String id=Json.createReader(new StringReader(add)).readObject().getString("id");
-
         String jsonResponse=Json.createObjectBuilder()
                 .add("id",id)
-                .add("kind",signObj.getString("kind"))
                 .add("idToken",signObj.getString("idToken"))
                 .add("email",signObj.getString("email"))
                 .add("refreshToken",signObj.getString("refreshToken"))
                 .add("expiresIn",signObj.getString("expiresIn"))
-                .add("localId",signObj.getString("localId"))
                 .build().toString();
 
 
         return jsonResponse;
     }
+
+    /*
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
@@ -153,7 +169,7 @@ public class UserService {
         this.db.deleteAllUsers();
         return Json.createObjectBuilder().add("status","Deleted all users").build().toString();
     }
-
+    */
 
 
     @GET
@@ -221,19 +237,12 @@ public class UserService {
       return result;
     }
 
+    /*
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public String deleteUserByID(@PathParam("id") String id, @Context HttpServletResponse response){
-        /*String result="";
-        if(id==1){
-            result+=Json.createObjectBuilder().add("status","deleted").build().toString();
-        }
-        else if(id==3){
 
-        }
-        return result;
-        */
 
         boolean deleted=this.db.deleteUserByID(id);
 
@@ -254,7 +263,7 @@ public class UserService {
         }
 
         return result;
-    }
+    }*/
 
     /*
 

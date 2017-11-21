@@ -24,4 +24,6 @@ public interface HabitsDatabase {
 
     String refreshToken(UserRefreshToken userRefreshToken);
 
+    String deleteUser(UserToken token);
+
 }

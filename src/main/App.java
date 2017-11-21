@@ -1,9 +1,9 @@
 package main;
 
+import services.DeleteUserService;
 import services.RefreshService;
 import services.SignInService;
 import services.UserService;
-
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 import java.util.*;
@@ -16,6 +16,7 @@ public class App extends Application {
         h.add(UserService.class);
         h.add(SignInService.class);
         h.add(RefreshService.class);
+        h.add(DeleteUserService.class);
         return h;
     }
 }

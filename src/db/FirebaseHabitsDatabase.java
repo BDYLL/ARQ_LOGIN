@@ -1,20 +1,14 @@
 package db;
 
-import com.google.firebase.database.*;
 import users.*;
-
 import javax.json.*;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FirebaseHabitsDatabase implements HabitsDatabase {
 
@@ -34,7 +28,6 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
 
     private static final String DELETE_USER="https://www.googleapis.com/identitytoolkit/v3/relyingparty/deleteAccount?key=";
 
-    private FirebaseDatabase db;
 
     public FirebaseHabitsDatabase(){}
 
@@ -76,6 +69,10 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
     public List<FullUser> getAllUsers() {
 
         String lines=this.getJSONStringFromFirebase(USERS_PATH);
+
+        if(lines.equals("null")){
+            return new ArrayList<>();
+        }
 
         JsonObject object=Json.createReader(new StringReader(lines)).readObject();
 
@@ -236,6 +233,43 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
         return lines;
     }
 
+    @Override
+    public String deleteUser(UserToken token) {
+
+        String parsedJSON=Json.createObjectBuilder()
+                .add("idToken",token.getIdToken())
+                .build()
+                .toString();
+
+        URL url=null;
+        String lines="";
+        HttpURLConnection connection=null;
+
+        try {
+            url=new URL(DELETE_USER+API_KEY);
+            connection=(HttpURLConnection)url.openConnection();
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type","application/json");
+            connection.setRequestMethod("POST");
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+            out.write(parsedJSON);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            lines=this.getLinesFromInputStream(connection.getInputStream());
+
+        } catch (IOException e) {
+            lines=this.getLinesFromInputStream(connection.getErrorStream());
+
+        }
+
+        return lines;
+    }
+
 
     private String getLinesFromInputStream(InputStream in){
         String lines="";
@@ -253,14 +287,15 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
 
         URL url=null;
         String lines="";
-        URLConnection connection=null;
+        HttpURLConnection connection=null;
 
         try {
             url=new URL(FIREBASE_URL+path+JSON_FORMAT);
-            connection=url.openConnection();
+            connection=(HttpURLConnection)url.openConnection();
             connection.setUseCaches(false);
+            connection.setRequestMethod("GET");
         } catch (IOException e) {
-            return lines;
+            e.printStackTrace();
         }
 
         /*
@@ -275,7 +310,7 @@ public class FirebaseHabitsDatabase implements HabitsDatabase {
         try {
             lines=this.getLinesFromInputStream(connection.getInputStream());
         } catch (IOException e) {
-            return lines;
+            e.printStackTrace();
         }
 
         return lines;

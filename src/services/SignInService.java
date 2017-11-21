@@ -3,8 +3,6 @@ package services;
 import db.FirebaseHabitsDatabase;
 import db.HabitsDatabase;
 import users.UserOnlyPass;
-import users.UserPass;
-
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletResponse;
@@ -38,8 +36,18 @@ public class SignInService {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            return Json.createObjectBuilder().add("status","Sign in failed").build().toString();
         }
 
-        return response;
+
+        return Json.createObjectBuilder()
+                .add("email",object.getString("email"))
+                .add("idToken",object.getString("idToken"))
+                .add("refreshToken",object.getString("refreshToken"))
+                .add("expiresIn",object.getString("expiresIn"))
+                .add("id",object.getString("localId"))
+                .build()
+                .toString();
     }
 }

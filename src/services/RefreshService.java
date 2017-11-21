@@ -3,7 +3,6 @@ package services;
 import db.FirebaseHabitsDatabase;
 import db.HabitsDatabase;
 import users.UserRefreshToken;
-
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletResponse;
@@ -40,7 +39,22 @@ public class RefreshService {
             return Json.createObjectBuilder().add("status","Invalid refresh token").build().toString();
         }
 
-        return resp;
+        String accessToken=respObj.getString("access_token");
+        String expiresIn=respObj.getString("expires_in");
+        String tokenType=respObj.getString("token_type");
+        String refreshToken=respObj.getString("refresh_token");
+        String idToken=respObj.getString("id_token");
+        String userId=respObj.getString("user_id");
+        String projectId=respObj.getString("project_id");
+
+        return Json.createObjectBuilder()
+                .add("refreshToken",refreshToken)
+                .add("idToken",idToken)
+                .add("expiresIn",expiresIn)
+                .add("id",userId)
+                .build()
+                .toString();
+
     }
 
 }
